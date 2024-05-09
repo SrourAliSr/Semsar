@@ -1,0 +1,6 @@
+@Semsar_HostAddress = http://localhost:5058
+
+GET {{Semsar_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
