@@ -8,8 +8,6 @@ class HouseDetailsModel {
 
   final String userId;
 
-  final String username;
-
   final String category;
 
   final String city;
@@ -24,13 +22,36 @@ class HouseDetailsModel {
 
   final String detials;
 
-  HouseDetailsModel({
+  final bool isForSale;
+
+  final bool isForRent;
+
+  final double rent;
+
+  final int rooms;
+
+  final int lavatory;
+
+  final int area;
+
+  final int diningRooms;
+
+  final int sleepingRooms;
+
+  HouseDetailsModel(
+    this.isForSale,
+    this.isForRent,
+    this.rent,
+    this.rooms,
+    this.lavatory,
+    this.area,
+    this.diningRooms,
+    this.sleepingRooms, {
     required this.housesId,
     required this.userId,
     required this.category,
     required this.city,
     required this.rating,
-    required this.username,
     required this.housesName,
     required this.phoneNumber,
     required this.price,

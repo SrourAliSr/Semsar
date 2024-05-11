@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:isolate';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:semsar/Models/get_house.dart';
 import 'package:semsar/constants/app_colors.dart';
 import 'package:semsar/services/houses/house_services.dart';
@@ -325,17 +324,17 @@ class _RealEstatePageState extends State<RealEstatePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _housePropertyContainer(
-                      '4 Rooms',
+                      '${widget.realEstate.houseDetails.rooms} Rooms',
                       Icons.door_back_door_outlined,
                       size,
                     ),
                     _housePropertyContainer(
-                      '3 Lavatory',
+                      '${widget.realEstate.houseDetails.lavatory} Lavatory',
                       Icons.bathtub_outlined,
                       size,
                     ),
                     _housePropertyContainer(
-                      '423 m²',
+                      '${widget.realEstate.houseDetails.area} m²',
                       Icons.space_dashboard_outlined,
                       size,
                     ),
@@ -348,18 +347,24 @@ class _RealEstatePageState extends State<RealEstatePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _housePropertyContainer(
-                      '2 Dining Rooms',
+                      '${widget.realEstate.houseDetails.diningRooms} Dining Rooms',
                       Icons.dining_outlined,
                       size,
                     ),
                     _housePropertyContainer(
-                      '4 Sleeping Rooms',
+                      '${widget.realEstate.houseDetails.sleepingRooms} Sleeping Rooms',
                       Icons.bed_outlined,
                       size,
                     ),
                     _housePropertyContainer(
                       formatDouble(
-                          widget.realEstate.houseDetails.price.round()),
+                            (widget.realEstate.houseDetails.category == 'Hotel')
+                                ? widget.realEstate.houseDetails.rent.round()
+                                : widget.realEstate.houseDetails.price.round(),
+                          ) +
+                          ((widget.realEstate.houseDetails.category == 'Hotel')
+                              ? '/Month'
+                              : ''),
                       Icons.price_change_outlined,
                       size,
                     ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:semsar/constants/app_colors.dart';
 import 'package:semsar/pages/Settings/settings_page.dart';
+import 'package:semsar/pages/myPosts/my_posts.dart';
 import 'package:semsar/pages/saved/saved_houses.dart';
 
 class HomeDrawer extends StatelessWidget {
@@ -103,6 +104,13 @@ class HomeDrawer extends StatelessWidget {
             ),
           ),
           GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const MyPostsPage(),
+                ),
+              );
+            },
             child: const _DrawerItems(
               icon: Icons.portrait_sharp,
               text: 'My posts',

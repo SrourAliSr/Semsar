@@ -1,12 +1,14 @@
+import 'dart:developer';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:semsar/Models/check%20error/check_error_registeration.dart';
-import 'package:semsar/pages/home/home_page.dart';
-import 'package:semsar/pages/regesteration/sign_up.dart';
-import 'package:semsar/services/Authentication/registeration.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:semsar/services/Authentication/authentication.dart';
+import 'package:semsar/services/Authentication/bloc/auth_bloc.dart';
+import 'package:semsar/services/Authentication/bloc/auth_event.dart';
 
 class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+  final String? errorMessage;
+  const SignInPage({super.key, this.errorMessage});
 
   @override
   State<SignInPage> createState() => _SignInPageState();
@@ -19,9 +21,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Authentication registeration = Authentication();
 
-  late bool isError;
-
-  late String? error;
+  Widget error = const SizedBox();
 
   @override
   void initState() {
@@ -30,10 +30,6 @@ class _SignInPageState extends State<SignInPage> {
     password = TextEditingController();
 
     registeration = Authentication();
-
-    isError = false;
-
-    error = null;
 
     super.initState();
   }
@@ -44,17 +40,28 @@ class _SignInPageState extends State<SignInPage> {
 
     password.dispose();
 
-    isError = false;
-
-    error = null;
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
+    if (widget.errorMessage != null) {
+      try {
+        setState(() {
+          error = Text(
+            widget.errorMessage ?? "",
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 213, 18, 4),
+            ),
+          );
+        });
+      } catch (e) {
+        log(e.toString());
+      }
+    }
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -125,11 +132,9 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => const SignUpPage(),
-                                  ),
-                                );
+                                context
+                                    .read<AuthBloc>()
+                                    .add(const AuthEventNavigateToSignUp());
                               },
                           ),
                         ],
@@ -139,48 +144,18 @@ class _SignInPageState extends State<SignInPage> {
                   const SizedBox(
                     height: 10,
                   ),
-                  (isError)
-                      ? Text(
-                          error ?? "",
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromARGB(255, 213, 18, 4),
-                          ),
-                        )
-                      : Container(),
+                  error,
                   const SizedBox(
                     height: 15,
                   ),
                   GestureDetector(
-                    onTap: () async {
-                      final CheckErrorRegisteration operation =
-                          await registeration.signIn(
-                        email: email.text,
-                        password: password.text,
-                      );
-
-                      if (!operation.sucess) {
-                        setState(() {
-                          isError = !operation.sucess;
-
-                          error = operation.errorMessage;
-                        });
-                      }
-                      if (operation.sucess) {
-                        setState(() {
-                          isError = !operation.sucess;
-
-                          error = operation.errorMessage;
-                        });
-                        // ignore: use_build_context_synchronously
-                        Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                            builder: (context) => const HomePage(),
-                          ),
-                          (route) => false,
-                        );
-                      }
+                    onTap: () {
+                      context.read<AuthBloc>().add(
+                            AuthEventSignIn(
+                              email: email.text,
+                              password: password.text,
+                            ),
+                          );
                     },
                     child: Container(
                       width: double.infinity,

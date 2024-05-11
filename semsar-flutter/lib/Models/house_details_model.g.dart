@@ -8,12 +8,19 @@ part of 'house_details_model.dart';
 
 HouseDetailsModel _$HouseDetailsModelFromJson(Map<String, dynamic> json) =>
     HouseDetailsModel(
+      json['isForSale'] as bool,
+      json['isForRent'] as bool,
+      (json['rent'] as num).toDouble(),
+      (json['rooms'] as num).toInt(),
+      (json['lavatory'] as num).toInt(),
+      (json['area'] as num).toInt(),
+      (json['diningRooms'] as num).toInt(),
+      (json['sleepingRooms'] as num).toInt(),
       housesId: (json['housesId'] as num).toInt(),
       userId: json['userId'] as String,
       category: json['category'] as String,
       city: json['city'] as String,
       rating: (json['rating'] as num).toDouble(),
-      username: json['username'] as String,
       housesName: json['housesName'] as String,
       phoneNumber: (json['phoneNumber'] as num?)?.toInt(),
       price: (json['price'] as num).toDouble(),
@@ -24,7 +31,6 @@ Map<String, dynamic> _$HouseDetailsModelToJson(HouseDetailsModel instance) =>
     <String, dynamic>{
       'housesId': instance.housesId,
       'userId': instance.userId,
-      'username': instance.username,
       'category': instance.category,
       'city': instance.city,
       'rating': instance.rating,
@@ -32,4 +38,12 @@ Map<String, dynamic> _$HouseDetailsModelToJson(HouseDetailsModel instance) =>
       'phoneNumber': instance.phoneNumber,
       'price': instance.price,
       'detials': instance.detials,
+      'isForSale': instance.isForSale,
+      'isForRent': instance.isForRent,
+      'rent': instance.rent,
+      'rooms': instance.rooms,
+      'lavatory': instance.lavatory,
+      'area': instance.area,
+      'diningRooms': instance.diningRooms,
+      'sleepingRooms': instance.sleepingRooms,
     };

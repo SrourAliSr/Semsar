@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:semsar/Models/search_values_model.dart';
 import 'package:semsar/constants/backend_url.dart';
 import 'package:semsar/constants/tokens.dart';
-import 'package:semsar/services/Authentication/registeration.dart';
+import 'package:semsar/services/Authentication/authentication.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HouseServices {
@@ -189,6 +189,39 @@ class HouseServices {
       final response = await http.get(
         Uri.parse(
           '$backendUrl/api/Houses/GetSavedHouses',
+        ).replace(
+          queryParameters: {'userId': userId},
+        ),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> savedHouses = jsonDecode(response.body);
+
+        return savedHouses.map((e) => GetHouse.fromJson(e)).toList();
+      }
+      if (response.statusCode == 401) {
+        return await getSavedHouses();
+      }
+      throw Exception(response.body);
+    } catch (e) {
+      log(e.toString());
+      return [];
+    }
+  }
+
+  Future<List<GetHouse>> getMyPosts() async {
+    final token = Tokens.token;
+
+    if (token == null) {
+      await refreshToken();
+    }
+    try {
+      final userId = await _auth.getUserId();
+
+      final response = await http.get(
+        Uri.parse(
+          '$backendUrl/api/Houses/GetMyPosts',
         ).replace(
           queryParameters: {'userId': userId},
         ),

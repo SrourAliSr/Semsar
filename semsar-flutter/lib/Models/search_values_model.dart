@@ -9,14 +9,15 @@ class SearchFilter {
   final double? min;
   final double? max;
 
-  SearchFilter(
-      {required this.category,
-      required this.stars,
-      required this.min,
-      required this.max});
+  SearchFilter({
+    required this.category,
+    required this.stars,
+    required this.min,
+    required this.max,
+  });
 
   factory SearchFilter.fromJson(Map<String, dynamic> json) =>
-      _$SearchValuesModelFromJson(json);
+      _$SearchFilterFromJson(json);
 
-  Map<String, dynamic> toJson() => _$SearchValuesModelToJson(this);
+  Map<String, dynamic> toJson() => _$SearchFilterToJson(this);
 }

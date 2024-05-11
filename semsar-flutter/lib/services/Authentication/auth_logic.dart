@@ -1,13 +1,16 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:semsar/Models/check%20error/check_error_registeration.dart';
 import 'package:semsar/Models/registeration_model.dart';
 import 'package:semsar/constants/backend_url.dart';
 import 'package:semsar/constants/tokens.dart';
+import 'package:semsar/services/Authentication/auth_abstract.dart';
+import 'package:http/http.dart' as http;
 import 'package:semsar/services/houses/house_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Authentication {
+class AuthLogic implements AuthAbstract {
+  @override
   Future<CheckErrorRegisteration> signUp({
     required String email,
     required String password,
@@ -50,6 +53,7 @@ class Authentication {
     }
   }
 
+  @override
   Future<CheckErrorRegisteration> signIn({
     required String email,
     required String password,
@@ -107,6 +111,7 @@ class Authentication {
     }
   }
 
+  @override
   Future<String?> getUserId() async {
     final token = Tokens.token;
     HouseServices services = HouseServices();

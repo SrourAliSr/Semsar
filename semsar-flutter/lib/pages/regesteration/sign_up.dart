@@ -1,12 +1,17 @@
+import 'dart:developer';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:semsar/pages/regesteration/sign_in.dart';
-import 'package:semsar/services/Authentication/registeration.dart';
-
-import '../../Models/check error/check_error_registeration.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:semsar/services/Authentication/authentication.dart';
+import 'package:semsar/services/Authentication/bloc/auth_bloc.dart';
+import 'package:semsar/services/Authentication/bloc/auth_event.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  final String? errorMessage;
+  const SignUpPage({
+    super.key,
+    this.errorMessage,
+  });
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -19,10 +24,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Authentication registeration = Authentication();
 
-  late bool isError;
-
-  late String? error;
-
   @override
   void initState() {
     email = TextEditingController();
@@ -30,10 +31,6 @@ class _SignUpPageState extends State<SignUpPage> {
     password = TextEditingController();
 
     registeration = Authentication();
-
-    isError = false;
-
-    error = null;
 
     super.initState();
   }
@@ -44,17 +41,13 @@ class _SignUpPageState extends State<SignUpPage> {
 
     password.dispose();
 
-    isError = false;
-
-    error = null;
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
+    log('sign up rebuild error:${widget.errorMessage ?? 'No error'}');
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -125,11 +118,9 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => const SignInPage(),
-                                  ),
-                                );
+                                context
+                                    .read<AuthBloc>()
+                                    .add(const AuthEventNavigateToSignIn());
                               },
                           ),
                         ],
@@ -139,33 +130,29 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(
                     height: 10,
                   ),
-                  (isError)
+                  (widget.errorMessage != null)
                       ? Text(
-                          error ?? "",
+                          widget.errorMessage!,
                           style: const TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
                             color: Color.fromARGB(255, 213, 18, 4),
                           ),
                         )
-                      : Container(),
+                      : const SizedBox(),
                   const SizedBox(
                     height: 15,
                   ),
                   GestureDetector(
-                    onTap: () async {
-                      final CheckErrorRegisteration operation =
-                          await registeration.signUp(
-                        email: email.text,
-                        password: password.text,
-                      );
-                      if (!operation.sucess) {
-                        setState(() {
-                          isError = true;
-
-                          error = operation.errorMessage;
-                        });
-                      }
+                    onTap: () {
+                      context.read<AuthBloc>().add(
+                            AuthEventSignUp(
+                              email.text,
+                              password.text,
+                              '',
+                              999999,
+                            ),
+                          );
                     },
                     child: Container(
                       width: double.infinity,
