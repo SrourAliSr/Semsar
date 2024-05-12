@@ -52,6 +52,12 @@ namespace Semsar.Controllers
         {
             return Ok(_services.GetSavedHouses(userId));
         }
+        [HttpGet]
+        [Route("GetMyPosts")]
+        public ActionResult<List<GetHouse>> GetMyPosts(string userId)
+        {
+            return Ok(_services.GetMyPosts(userId));
+        }
 
         [HttpGet]
         [Route("GetMedia")]

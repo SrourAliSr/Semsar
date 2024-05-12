@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:semsar/Models/get_house.dart';
 import 'package:semsar/Models/search_values_model.dart';
-import 'package:semsar/pages/real%20estate/real_estate_page.dart';
+import 'package:semsar/constants/route_names.dart';
 import 'package:semsar/services/houses/house_services.dart';
 import 'package:semsar/widgets/custom_container.dart';
 import 'package:semsar/widgets/house_cards.dart';
@@ -26,7 +26,8 @@ class HouseList extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData &&
             snapshot.data != null &&
-            snapshot.connectionState == ConnectionState.done) {
+            snapshot.connectionState == ConnectionState.done &&
+            snapshot.data!.isNotEmpty) {
           final List<GetHouse> houses = snapshot.data!;
 
           return Padding(
@@ -48,14 +49,13 @@ class HouseList extends StatelessWidget {
                   backgroundColor: const Color.fromARGB(255, 255, 247, 243),
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => RealEstatePage(
-                            realEstate: houses[index],
-                            image: image,
-                          ),
-                        ),
+                        realStatePageRotes,
+                        arguments: {
+                          'realEstate': houses[index],
+                          'image': image,
+                        },
                       );
                     },
                     child: HouseCards(
@@ -69,9 +69,19 @@ class HouseList extends StatelessWidget {
               },
             ),
           );
-        } else if (snapshot.data?.isEmpty ?? false) {
-          return const Center(
-            child: Text("There are no houses!"),
+        } else if ((snapshot.data == null ||
+                (snapshot.data != null && snapshot.data!.isEmpty)) &&
+            searchCity != '') {
+          return const SizedBox(
+            height: 300,
+            child: Center(
+              child: Text(
+                "There is nothing at this location!",
+                style: TextStyle(
+                  fontSize: 21,
+                ),
+              ),
+            ),
           );
         }
         return SizedBox(

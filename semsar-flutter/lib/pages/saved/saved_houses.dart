@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:semsar/pages/home/home_page.dart';
-import 'package:semsar/pages/real%20estate/real_estate_page.dart';
+import 'package:semsar/constants/route_names.dart';
 import 'package:semsar/services/houses/house_services.dart';
 import 'package:semsar/widgets/custom_container.dart';
 import 'package:semsar/widgets/house_cards.dart';
@@ -18,11 +17,11 @@ class SavedHousesPage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (context) => const HomePage(),
-                  ),
-                  (route) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                homePageRotes,
+                (route) => false,
+              );
             },
             icon: const Icon(Icons.arrow_back)),
         title: const Text(
@@ -59,14 +58,13 @@ class SavedHousesPage extends StatelessWidget {
                       backgroundColor: const Color.fromARGB(255, 255, 247, 243),
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.push(
+                          Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => RealEstatePage(
-                                realEstate: houses[index],
-                                image: image,
-                              ),
-                            ),
+                            realStatePageRotes,
+                            arguments: {
+                              'realEstate': houses[index],
+                              'image': image,
+                            },
                           );
                         },
                         child: HouseCards(

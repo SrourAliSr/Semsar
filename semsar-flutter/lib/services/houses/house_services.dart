@@ -358,4 +358,37 @@ class HouseServices {
       return false;
     }
   }
+
+  //put requests
+  Future<bool> updateHouse(int houseId, AddNewHouseModel newHouse) async {
+    final token = Tokens.token;
+    if (token == null) {
+      await refreshToken();
+    }
+    try {
+      final response = await http.put(
+        Uri.parse('$backendUrl/api/Houses'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(
+          {
+            'houseId': houseId,
+            ...newHouse.toJson(),
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 401) {
+        await refreshToken();
+        return updateHouse(houseId, newHouse);
+      }
+      throw Exception(response.body);
+    } catch (e) {
+      log(e.toString());
+      return false;
+    }
+  }
 }

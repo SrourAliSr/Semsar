@@ -5,13 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:semsar/Models/add_new_house_model.dart';
+import 'package:semsar/constants/app_colors.dart';
+import 'package:semsar/constants/route_names.dart';
 import 'package:semsar/pages/add%20house/category_drop_down_menu.dart';
 import 'package:semsar/pages/add%20house/city_drop_down_menu.dart';
 import 'package:semsar/services/houses/house_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddHousePage extends StatefulWidget {
-  const AddHousePage({super.key});
+  const AddHousePage({
+    super.key,
+  });
 
   @override
   State<AddHousePage> createState() => _AddHousePageState();
@@ -20,39 +24,205 @@ class AddHousePage extends StatefulWidget {
 class _AddHousePageState extends State<AddHousePage> {
   HouseServices services = HouseServices();
 
-  TextEditingController price = TextEditingController();
+  late TextEditingController price;
 
-  TextEditingController details = TextEditingController();
+  late TextEditingController details;
 
-  TextEditingController phoneNumber = TextEditingController();
+  late TextEditingController phoneNumber;
 
-  TextEditingController houseName = TextEditingController();
+  late TextEditingController houseName;
 
-  List<String> houseMedia = [];
+  late TextEditingController rent;
 
-  List<File> houseMediaFiles = [];
+  late TextEditingController rooms;
 
-  String category = 'Casual';
+  late TextEditingController lavatory;
 
-  String city = 'Beirut';
+  late TextEditingController area;
+
+  late TextEditingController diningRooms;
+
+  late TextEditingController sleepingRooms;
+
+  late bool isForSale = false;
+
+  late bool isForRent = false;
+
+  late List<String> houseMedia;
+
+  late List<File> houseMediaFiles;
+
+  late String category;
+
+  late String city;
 
   String? error;
 
   @override
+  void initState() {
+    price = TextEditingController();
+
+    details = TextEditingController();
+
+    phoneNumber = TextEditingController();
+
+    houseName = TextEditingController();
+
+    rent = TextEditingController();
+
+    rooms = TextEditingController();
+
+    lavatory = TextEditingController();
+
+    area = TextEditingController();
+
+    diningRooms = TextEditingController();
+
+    sleepingRooms = TextEditingController();
+
+    isForSale = false;
+
+    isForRent = false;
+
+    houseMedia = [];
+
+    houseMediaFiles = [];
+
+    category = 'Casual';
+
+    city = 'Beirut';
+
+    super.initState();
+  }
+
+  String formatDouble(int value) {
+    if (value >= 1000000) {
+      String result = (value / 1000000).toStringAsFixed(3);
+      if (result.endsWith('.000')) {
+        result = result.substring(0, result.length - 4);
+      }
+      return '\$ ${result}m';
+    } else if (value >= 1000) {
+      String result = (value / 1000).toStringAsFixed(3);
+      if (result.endsWith('.000')) {
+        result = result.substring(0, result.length - 4);
+      }
+      return '\$ ${result.replaceAll('.', ',')}k';
+    } else {
+      String result = value.toStringAsFixed(2);
+      if (result.endsWith('.00')) {
+        result = result.substring(0, result.length - 3);
+      }
+      return '\$ $result';
+    }
+  }
+
+  Widget _housePropertyContainer(
+    String propertyName,
+    IconData icon,
+    Size size,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      width: size.width * 0.28,
+      height: size.width * 0.28,
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color.fromARGB(84, 158, 158, 158)),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(
+            20,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Icon(
+            icon,
+            size: 35,
+            color: AppColors.lightBrown,
+          ),
+          Flexible(
+            child: Text(
+              propertyName,
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                color: AppColors.darkBrown,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _houseDropDownMenuItems(
+    Widget dropItems,
+    IconData icon,
+    Size size,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      width: size.width * 0.43,
+      height: size.width * 0.4,
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color.fromARGB(84, 158, 158, 158)),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(
+            20,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Icon(
+            icon,
+            size: 45,
+            color: AppColors.lightBrown,
+          ),
+          dropItems,
+        ],
+      ),
+    );
+  }
+
+  Future<void> editPropertyNumbers(TextEditingController controller) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(7))),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
+        preferredSize: const Size.fromHeight(100),
         child: ClipRRect(
           borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(15),
-            bottomRight: Radius.circular(15),
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
           ),
           child: AppBar(
+            toolbarHeight: 80,
             title: const Text(
               'Add new house',
             ),
-            backgroundColor: Colors.amber,
+            backgroundColor: AppColors.cinderella,
             centerTitle: true,
           ),
         ),
@@ -62,75 +232,216 @@ class _AddHousePageState extends State<AddHousePage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(
-                height: 350,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    TextField(
-                      controller: price,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        labelText: 'Price',
-                      ),
-                    ),
-                    TextField(
-                      controller: details,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        labelText: 'Details',
-                      ),
-                    ),
-                    TextField(
-                      controller: phoneNumber,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        labelText: 'Phone Number',
-                      ),
-                    ),
-                    TextField(
-                      controller: houseName,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        labelText: 'The name of the building',
-                      ),
-                    ),
-                  ],
+              const SizedBox(
+                height: 10,
+              ),
+              TextField(
+                controller: phoneNumber,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  labelText: 'Phone Number',
                 ),
               ),
               const SizedBox(
                 height: 10,
               ),
-              CategoryDropDownMenu(
-                setCategory: (c) {
-                  setState(
-                    () {
-                      category = c;
-                    },
-                  );
-                },
+              TextField(
+                controller: houseName,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  labelText: 'The name of the building',
+                ),
               ),
               const SizedBox(
                 height: 10,
               ),
-              CityDropDownMenu(
-                setCity: (c) {
-                  setState(() {
-                    city = c;
-                  });
-                },
+              TextField(
+                controller: details,
+                keyboardType: TextInputType.text,
+                maxLines: null,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  labelText: 'Details',
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
+                    children: [
+                      const Text('For Sale',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: AppColors.darkBrown,
+                          )),
+                      Checkbox(
+                        value: isForSale,
+                        onChanged: (value) {
+                          if (value != null && category != 'Hotel') {
+                            setState(() {
+                              isForSale = value;
+                            });
+                          }
+                          if (category == 'Hotel') {
+                            setState(() {
+                              isForSale = false;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      const Text('For Rent',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: AppColors.darkBrown,
+                          )),
+                      Checkbox(
+                        value: isForRent,
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              isForRent = value;
+                            });
+                          }
+                        },
+                        semanticLabel: 'For Rent',
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      await editPropertyNumbers(rooms);
+                    },
+                    child: _housePropertyContainer(
+                      '${(rooms.text.isEmpty) ? '0' : rooms.text} Rooms',
+                      Icons.door_back_door_outlined,
+                      size,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      await editPropertyNumbers(lavatory);
+                    },
+                    child: _housePropertyContainer(
+                      '${(lavatory.text.isEmpty) ? '0' : lavatory.text} lavatory',
+                      Icons.bathtub_outlined,
+                      size,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      await editPropertyNumbers(area);
+                    },
+                    child: _housePropertyContainer(
+                      '${(area.text.isEmpty) ? '0' : area.text} m²',
+                      Icons.space_dashboard_outlined,
+                      size,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () async {
+                      await editPropertyNumbers(
+                        diningRooms,
+                      );
+                    },
+                    child: _housePropertyContainer(
+                      '${(diningRooms.text.isEmpty) ? '0' : diningRooms.text} Dining Rooms',
+                      Icons.dining_outlined,
+                      size,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      await editPropertyNumbers(sleepingRooms);
+                    },
+                    child: _housePropertyContainer(
+                      '${(sleepingRooms.text.isEmpty) ? '0' : sleepingRooms.text} Sleeping Rooms',
+                      Icons.bed_outlined,
+                      size,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      await editPropertyNumbers(
+                          (category == 'Hotel') ? rent : price);
+                    },
+                    child: _housePropertyContainer(
+                      '\$${(category == 'Hotel') ? (rent.text.isEmpty ? '0' : rent.text) : (price.text.isEmpty ? '0' : price.text)}${(category == 'Hotel' || (isForRent && !isForSale)) ? '/Month' : ''}',
+                      Icons.price_change_outlined,
+                      size,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _houseDropDownMenuItems(
+                    CategoryDropDownMenu(
+                      setCategory: (c) {
+                        setState(
+                          () {
+                            category = c;
+                          },
+                        );
+                        if (category == 'Hotel' && isForSale) {
+                          setState(() {
+                            isForSale = false;
+                          });
+                        }
+                      },
+                    ),
+                    Icons.category_outlined,
+                    size,
+                  ),
+                  _houseDropDownMenuItems(
+                    CityDropDownMenu(
+                      setCity: (c) {
+                        setState(() {
+                          city = c;
+                        });
+                      },
+                    ),
+                    Icons.location_on_outlined,
+                    size,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 10,
@@ -179,23 +490,42 @@ class _AddHousePageState extends State<AddHousePage> {
                             }
                           },
                           child: Container(
-                            color: Colors.grey,
+                            decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 242, 242, 242),
+                                border: Border.all(
+                                    width: 1,
+                                    color: Colors.grey.withOpacity(0.5)),
+                                borderRadius: BorderRadius.circular(7)),
                             width: 200,
                             child: const Center(
                               child: Text(
                                 '+',
                                 style: TextStyle(
-                                    fontSize: 35, fontWeight: FontWeight.w400),
+                                  fontSize: 35,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.darkBrown,
+                                ),
                               ),
                             ),
                           ),
                         );
                       }
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Image.file(
-                          houseMediaFiles[index],
-                          height: 200,
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            addHousePhotoViewerPageRotes,
+                            arguments: {
+                              'imageFile': houseMediaFiles[index],
+                            },
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Image.file(
+                            houseMediaFiles[index],
+                            height: 200,
+                          ),
                         ),
                       );
                     },
@@ -221,7 +551,9 @@ class _AddHousePageState extends State<AddHousePage> {
                       price.text.isNotEmpty &&
                       phoneNumber.text.isNotEmpty &&
                       houseName.text.isNotEmpty &&
-                      houseMedia != []) {
+                      houseMedia != [] &&
+                      (isForRent || isForSale) &&
+                      rooms.text.isNotEmpty) {
                     //post media
                     final house = AddNewHouseModel(
                       email: email,
@@ -231,19 +563,27 @@ class _AddHousePageState extends State<AddHousePage> {
                       houseName: houseName.text,
                       category: category,
                       city: city,
+                      isForRent: isForRent,
+                      isForSale: isForRent,
+                      rooms: int.parse(rooms.text),
+                      lavatory: int.parse(rooms.text),
+                      area: int.parse(rooms.text),
+                      diningRooms: int.parse(rooms.text),
+                      sleepingRooms: int.parse(rooms.text),
+                      rent: double.parse(rent.text),
                       media: houseMedia,
                     );
-                    final bool isUploaded = await services.uploadHouse(house);
-                    log(isUploaded.toString());
-                    if (!isUploaded) {
-                      setState(() {
-                        error = "Something went wrong";
-                      });
-                    } else {
-                      error = null;
-                      // ignore: use_build_context_synchronously
-                      Navigator.pop(context);
-                    }
+                    services.uploadHouse(house).then((isUploaded) {
+                      log(isUploaded.toString());
+                      if (!isUploaded) {
+                        setState(() {
+                          error = "Something went wrong";
+                        });
+                      } else {
+                        error = null;
+                        Navigator.pop(context);
+                      }
+                    });
                   }
                 },
                 child: Container(
@@ -254,11 +594,9 @@ class _AddHousePageState extends State<AddHousePage> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        Color.fromARGB(255, 250, 213, 104),
-                        Color.fromARGB(255, 247, 207, 87),
-                        Color.fromARGB(255, 250, 203, 60),
-                        Color.fromARGB(255, 253, 201, 46),
-                        Colors.amber,
+                        Color.fromARGB(255, 120, 72, 64),
+                        AppColors.lightBrown,
+                        Color.fromARGB(255, 94, 45, 38),
                       ],
                     ),
                     boxShadow: const [
@@ -273,9 +611,9 @@ class _AddHousePageState extends State<AddHousePage> {
                     child: Text(
                       'Submit',
                       style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w400,
-                      ),
+                          fontSize: 25,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white),
                     ),
                   ),
                 ),

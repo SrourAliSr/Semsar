@@ -228,6 +228,9 @@ namespace Semsar.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HousesId"));
 
+                    b.Property<int>("Area")
+                        .HasColumnType("int");
+
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -240,9 +243,21 @@ namespace Semsar.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("DiningRooms")
+                        .HasColumnType("int");
+
                     b.Property<string>("HousesName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsForRent")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsForSale")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Lavatory")
+                        .HasColumnType("int");
 
                     b.Property<int?>("PhoneNumber")
                         .HasColumnType("int");
@@ -253,11 +268,16 @@ namespace Semsar.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("float");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double>("Rent")
+                        .HasColumnType("float");
 
-                    b.Property<string>("Username")
+                    b.Property<int>("Rooms")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SleepingRooms")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:semsar/constants/route_names.dart';
 import 'package:semsar/pages/home/home_page.dart';
 import 'package:semsar/pages/real%20estate/real_estate_page.dart';
 import 'package:semsar/services/houses/house_services.dart';
@@ -18,11 +19,11 @@ class MyPostsPage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (context) => const HomePage(),
-                  ),
-                  (route) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                homePageRotes,
+                (route) => false,
+              );
             },
             icon: const Icon(Icons.arrow_back)),
         title: const Text(
@@ -40,11 +41,10 @@ class MyPostsPage extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.done) {
               final houses = snapshot.data ?? [];
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: GridView.builder(
                   shrinkWrap: true,
                   itemCount: houses.length,
-                  physics: const NeverScrollableScrollPhysics(),
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 410,
                     mainAxisExtent: 340,
@@ -59,14 +59,13 @@ class MyPostsPage extends StatelessWidget {
                       backgroundColor: const Color.fromARGB(255, 255, 247, 243),
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.push(
+                          Navigator.pushNamed(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => RealEstatePage(
-                                realEstate: houses[index],
-                                image: image,
-                              ),
-                            ),
+                            realStatePageRotes,
+                            arguments: {
+                              'realEstate': houses[index],
+                              'image': image,
+                            },
                           );
                         },
                         child: HouseCards(

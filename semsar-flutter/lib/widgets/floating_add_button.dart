@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:semsar/constants/app_colors.dart';
-import 'package:semsar/pages/add%20house/add_house.dart';
+import 'package:semsar/constants/route_names.dart';
 
 class FloatingAddButton extends StatelessWidget {
   const FloatingAddButton({super.key});
@@ -18,10 +18,9 @@ class FloatingAddButton extends StatelessWidget {
           size: 45,
         ),
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const AddHousePage(),
-            ),
+          Navigator.pushNamed(
+            context,
+            addHousePageRotes,
           );
         },
       ),

@@ -18,9 +18,33 @@ class AddNewHouseModel {
 
   final String city;
 
+  final bool isForSale;
+
+  final bool isForRent;
+
+  final double rent;
+
+  final int rooms;
+
+  final int lavatory;
+
+  final int area;
+
+  final int diningRooms;
+
+  final int sleepingRooms;
+
   final List<String> media;
 
   AddNewHouseModel({
+    required this.isForSale,
+    required this.isForRent,
+    required this.rent,
+    required this.rooms,
+    required this.lavatory,
+    required this.area,
+    required this.diningRooms,
+    required this.sleepingRooms,
     required this.email,
     required this.price,
     required this.details,

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:semsar/constants/app_colors.dart';
-import 'package:semsar/pages/Settings/settings_page.dart';
-import 'package:semsar/pages/myPosts/my_posts.dart';
-import 'package:semsar/pages/saved/saved_houses.dart';
+import 'package:semsar/constants/route_names.dart';
 
 class HomeDrawer extends StatelessWidget {
   final String username;
@@ -79,10 +77,9 @@ class HomeDrawer extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const SettingsPage(),
-                ),
+              Navigator.pushNamed(
+                context,
+                settingsPageRotes,
               );
             },
             child: const _DrawerItems(
@@ -92,11 +89,11 @@ class HomeDrawer extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (context) => const SavedHousesPage(),
-                  ),
-                  (route) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                savedPageRotes,
+                (route) => false,
+              );
             },
             child: const _DrawerItems(
               icon: Icons.star,
@@ -105,10 +102,9 @@ class HomeDrawer extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const MyPostsPage(),
-                ),
+              Navigator.pushNamed(
+                context,
+                myPostsPageRotes,
               );
             },
             child: const _DrawerItems(

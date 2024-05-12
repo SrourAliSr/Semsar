@@ -3,14 +3,19 @@ import 'dart:isolate';
 import 'package:flutter/material.dart';
 import 'package:semsar/Models/get_house.dart';
 import 'package:semsar/constants/app_colors.dart';
+import 'package:semsar/constants/route_names.dart';
+import 'package:semsar/services/Authentication/authentication.dart';
 import 'package:semsar/services/houses/house_services.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class RealEstatePage extends StatefulWidget {
   final GetHouse realEstate;
   final Widget image;
-  const RealEstatePage(
-      {super.key, required this.realEstate, required this.image});
+  const RealEstatePage({
+    super.key,
+    required this.realEstate,
+    required this.image,
+  });
 
   @override
   State<RealEstatePage> createState() => _RealEstatePageState();
@@ -20,6 +25,10 @@ class _RealEstatePageState extends State<RealEstatePage> {
   final PageController controller = PageController();
 
   HouseServices services = HouseServices();
+
+  final Authentication _auth = Authentication();
+
+  List<String> houseMedia = [];
 
   bool isPostSaved = false;
 
@@ -36,6 +45,7 @@ class _RealEstatePageState extends State<RealEstatePage> {
         );
       }
     });
+
     super.initState();
   }
 
@@ -100,37 +110,34 @@ class _RealEstatePageState extends State<RealEstatePage> {
   }
 
   Future<List<dynamic>> getMedia(int houseId, int excludedId, Size size) async {
-    final List<dynamic> images =
-        await services.getHouseMedia(houseId, excludedId);
+    final List<dynamic> images = await services.getHouseMedia(
+        widget.realEstate.houseDetails.housesId,
+        widget.realEstate.houseMedia.id);
+
+    houseMedia = [widget.realEstate.houseMedia.media, ...images];
 
     List<dynamic> imageWidgets = [];
 
     for (var element in images) {
-      imageWidgets.add(
-        await Isolate.run(
-          () {
-            final imageBytes = base64.decode(
-              element,
-            );
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(7),
-              child: Image.memory(
-                imageBytes,
-                width: size.width,
-                fit: BoxFit.cover,
-              ),
-            );
-          },
-        ),
+      await Isolate.run(
+        () {
+          return base64.decode(
+            element,
+          );
+        },
+      ).then(
+        (imageBytes) {
+          imageWidgets.add(
+            Image.memory(
+              imageBytes,
+              width: size.width,
+              fit: BoxFit.cover,
+            ),
+          );
+        },
       );
     }
-    final thumbNailImage = ClipRRect(
-      borderRadius: BorderRadius.circular(7),
-      child: SizedBox(
-        width: size.width,
-        child: widget.image,
-      ),
-    );
+    final thumbNailImage = widget.image;
     return [thumbNailImage, ...imageWidgets];
   }
 
@@ -172,19 +179,44 @@ class _RealEstatePageState extends State<RealEstatePage> {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () async {
-              final reposnse = await services
-                  .savePost(widget.realEstate.houseDetails.housesId);
-              setState(() {
-                isPostSaved = reposnse;
-              });
+          FutureBuilder(
+            future: _auth.getUserId(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.data! == widget.realEstate.houseDetails.userId) {
+                return IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      editHousePageRotes,
+                      arguments: {
+                        'oldData': widget.realEstate,
+                        'houseMedia': List<String>.from(houseMedia),
+                      },
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.edit_outlined,
+                    color: AppColors.darkBrown,
+                    size: 38,
+                  ),
+                );
+              }
+              return IconButton(
+                onPressed: () async {
+                  final reposnse = await services
+                      .savePost(widget.realEstate.houseDetails.housesId);
+                  setState(() {
+                    isPostSaved = reposnse;
+                  });
+                },
+                icon: Icon(
+                  (isPostSaved) ? Icons.star : Icons.star_outline,
+                  color: AppColors.darkBrown,
+                  size: 38,
+                ),
+              );
             },
-            icon: Icon(
-              (isPostSaved) ? Icons.star : Icons.star_outline,
-              color: AppColors.darkBrown,
-              size: 38,
-            ),
           ),
           IconButton(
             onPressed: () {},
@@ -221,7 +253,27 @@ class _RealEstatePageState extends State<RealEstatePage> {
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 10,
                               ),
-                              child: snapshot.data?[index],
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    photoViewerPageRotes,
+                                    arguments: {
+                                      'images': snapshot.data!,
+                                    },
+                                  );
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(7),
+                                  child: (index == 0)
+                                      ? Hero(
+                                          tag: widget
+                                              .realEstate.houseMedia.houseId
+                                              .toString(),
+                                          child: snapshot.data?[index])
+                                      : snapshot.data?[index],
+                                ),
+                              ),
                             );
                           },
                         ),
@@ -250,7 +302,11 @@ class _RealEstatePageState extends State<RealEstatePage> {
                       child: Container(
                         width: size.width,
                         margin: const EdgeInsets.only(bottom: 20),
-                        child: widget.image,
+                        child: Hero(
+                          tag: widget.realEstate.houseDetails.housesId
+                              .toString(),
+                          child: widget.image,
+                        ),
                       ),
                     ),
                   );

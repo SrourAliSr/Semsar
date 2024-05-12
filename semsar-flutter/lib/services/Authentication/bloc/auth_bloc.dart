@@ -40,9 +40,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventLogout>(
       (event, emit) async {
         final pref = await SharedPreferences.getInstance();
-
         await pref.clear();
-
         emit(const AuthStateLogout());
       },
     );

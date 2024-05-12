@@ -20,7 +20,12 @@ class HouseCards extends StatelessWidget {
         imageData,
       ),
     );
-    Widget i = Hero(
+    Widget i = Image.memory(
+      imageBytes,
+      width: double.infinity,
+      fit: BoxFit.cover,
+    );
+    Widget heroImage = Hero(
       tag: house.houseDetails.housesId.toString(),
       child: Image.memory(
         imageBytes,
@@ -31,7 +36,7 @@ class HouseCards extends StatelessWidget {
     setImage(i);
     return ClipRRect(
       borderRadius: BorderRadius.circular(4),
-      child: i,
+      child: heroImage,
     );
   }
 
@@ -102,7 +107,18 @@ class HouseCards extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              _properties('${house.houseDetails.rating.round()} stars'),
+              if (house.houseDetails.category == 'Hotel')
+                _properties('${house.houseDetails.rating.round()} stars'),
+              if (house.houseDetails.category == 'Hotel')
+                const SizedBox(
+                  width: 10,
+                ),
+              if (house.houseDetails.isForRent) _properties('For Rent'),
+              if (house.houseDetails.isForRent)
+                const SizedBox(
+                  width: 10,
+                ),
+              if (house.houseDetails.isForSale) _properties('For Sale')
             ],
           ),
           const SizedBox(

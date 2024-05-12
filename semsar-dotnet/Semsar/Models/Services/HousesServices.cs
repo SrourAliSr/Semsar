@@ -1,4 +1,5 @@
-﻿using Semsar.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Semsar.Data;
 using Semsar.Models.Errors;
 using Semsar.Models.Houses_Models;
 using System.Linq;
@@ -84,6 +85,20 @@ namespace Semsar.Models.Services
             return [..joinedTable];
                             
         }
+        
+        public List<GetHouse> GetMyPosts(string userId)
+        {
+            var joinedTable = from d in _context.HouseDetails
+                              join m in _context.HouseMedia
+                              on d.HousesId equals m.HouseId
+                              into mediaGroup
+                              from media in mediaGroup.Take(1).DefaultIfEmpty()
+                              where d.UserId == userId
+                              select new GetHouse { HouseDetails = d, HouseMedia = media };
+
+            return [.. joinedTable];
+
+        }
 
         //post request logic
         public HousesErrors UploadNewHouse(UploadHouse uploadHouse)
@@ -96,17 +111,25 @@ namespace Semsar.Models.Services
                 
                 if(user != null) 
                 {
-
-                    HouseDetails newHouse = new HouseDetails { 
+                    HouseDetails newHouse = new()
+                    {
                         UserId = user.Id,
-                        Username = user.UserName!,
-                        Price= uploadHouse.price, 
-                        Detials = uploadHouse.details ?? "" , 
+                        Price = uploadHouse.price,
+                        Detials = uploadHouse.details ?? "",
                         PhoneNumber = uploadHouse.phoneNumber,
                         HousesName = uploadHouse.houseName ?? "",
                         City = uploadHouse.City,
-                        Category = uploadHouse.Category
+                        Category = uploadHouse.Category,
+                        IsForSale = uploadHouse.IsForSale,
+                        IsForRent = uploadHouse.IsForRent,
+                        Rent = uploadHouse.Rent,
+                        Rooms = uploadHouse.Rooms,
+                        Lavatory = uploadHouse.Lavatory,
+                        Area = uploadHouse.Area,
+                        DiningRooms = uploadHouse.DiningRooms,
+                        SleepingRooms = uploadHouse.SleepingRooms
                     };
+
 
                     _context.HouseDetails.Add(newHouse);
 
@@ -414,52 +437,72 @@ namespace Semsar.Models.Services
             
             try
             {
-                var user = _context.Users.Where(i => i.UserName == houseDetails.userEmail).FirstOrDefault();
+                var houseD = from d in _context.HouseDetails
+                             where d.HousesId == houseDetails.houseId
+                             select d;
 
-                if (user != null)
+                List<byte[]> houseMedia = [.. from m in _context.HouseMedia
+                                              where m.HouseId == houseDetails.houseId
+                                              select m.Media];
+
+                AllHouseDetails oldDetails = new() { HouseDetails = houseD.First(), HouseMedia = houseMedia };
+
+                if (oldDetails != null)
                 {
-                    var isUserTheOwner = _context.HouseDetails.Where(i => i.UserId == user.Id).FirstOrDefault();
+                    oldDetails.HouseDetails.PhoneNumber = houseDetails.phoneNumber;
 
-                    if (isUserTheOwner != null)
+                    oldDetails.HouseDetails.HousesName = houseDetails.houseName;
+
+                    oldDetails.HouseDetails.Detials = houseDetails.details ?? "";
+
+                    oldDetails.HouseDetails.Price = houseDetails.price;
+
+                    oldDetails.HouseDetails.IsForRent = houseDetails.IsForRent;
+
+                    oldDetails.HouseDetails.IsForSale = houseDetails.IsForSale;
+
+                    oldDetails.HouseDetails.Rent = houseDetails.Rent;
+
+                    oldDetails.HouseDetails.Rooms = houseDetails.Rooms;
+
+                    oldDetails.HouseDetails.Lavatory = houseDetails.Lavatory;
+
+                    oldDetails.HouseDetails.Area = houseDetails.Area;
+
+                    oldDetails.HouseDetails.DiningRooms = houseDetails.DiningRooms;
+
+                    oldDetails.HouseDetails.SleepingRooms = houseDetails.SleepingRooms;
+
+
+                    oldDetails.HouseDetails.Category = houseDetails.Category;
+
+                    oldDetails.HouseDetails.City = houseDetails.City;
+
+                    if(updateMedia(houseDetails.houseId, houseDetails.Media))
                     {
-                        HouseDetails? oldDetails =  _context.HouseDetails.FirstOrDefault(i => i.HousesId == houseDetails.houseId);
 
-                        if (oldDetails != null)
-                        {
-                            oldDetails.PhoneNumber = houseDetails.PhoneNumber;
+                    _context.SaveChanges();
 
-                            oldDetails.HousesName = houseDetails.HousesName;
+                    errors.Success = true;
 
-                            oldDetails.Detials = houseDetails.Detials;
+                    errors.Error = null;
 
-                            oldDetails.Price = houseDetails.Price;
+                    return errors;
 
-                            _context.SaveChanges();
-
-                            errors.Success = true;
-
-                            errors.Error = null;
-
-                            return errors;
-                        }
-                        errors.Success = false;
-
-                        errors.Error = "There are no Details To be Edited";
-                        
-                        return errors;
                     }
                     errors.Success = false;
 
-                    errors.Error = "You dont own this house";
+                    errors.Error = "Something went wrong";
 
                     return errors;
                 }
                 errors.Success = false;
 
-                errors.Error = "The user is null";
+                errors.Error = "There are no Details To be Edited";
 
                 return errors;
-            }catch(Exception ex)
+            
+        }catch(Exception ex)
             {
                 errors.Success = false;
 
@@ -469,7 +512,36 @@ namespace Semsar.Models.Services
             }
         }
 
-       
-        
+        public bool updateMedia(int houseId, List<byte[]> media) 
+        {
+            try
+            {
+                var table = from m in _context.HouseMedia
+                            where m.HouseId == houseId
+                            select m;
+
+                foreach (var item in table)
+                {
+                    _context.HouseMedia.Remove(item);
+
+                }
+                foreach (var item in media)
+                {
+
+                    HouseMedia newMedia = new() { HouseId = houseId, Media = item };
+
+                    _context.HouseMedia.Add(newMedia);
+                }
+                _context.SaveChanges();
+
+                return true;
+            }catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                return false;
+            }
+        }
+     
     }
 }

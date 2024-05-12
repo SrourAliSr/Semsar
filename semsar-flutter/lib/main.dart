@@ -5,6 +5,7 @@ import 'package:semsar/constants/app_colors.dart';
 import 'package:semsar/pages/home/home_page.dart';
 import 'package:semsar/pages/regesteration/sign_in.dart';
 import 'package:semsar/pages/regesteration/sign_up.dart';
+import 'package:semsar/routes/generated_routes.dart';
 import 'package:semsar/services/Authentication/authentication.dart';
 import 'package:semsar/services/Authentication/bloc/auth_bloc.dart';
 import 'package:semsar/services/Authentication/bloc/auth_event.dart';
@@ -12,17 +13,19 @@ import 'package:semsar/services/Authentication/bloc/auth_state.dart';
 
 void main() {
   HttpOverrides.global = DevHttpOverrides();
-
+  AppRoutes routes = AppRoutes();
   runApp(
     BlocProvider<AuthBloc>(
       create: (context) => AuthBloc(Authentication()),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          fontFamily: 'Open-Sans',
           colorScheme: ColorScheme.fromSeed(seedColor: AppColors.cinderella),
           useMaterial3: true,
         ),
         home: const MainRoute(),
+        onGenerateRoute: (settings) => routes.onGeneratedRoute(settings),
       ),
     ),
   );
