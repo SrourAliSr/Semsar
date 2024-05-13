@@ -23,7 +23,7 @@ class AuthEventSignUp extends AuthEvent {
   final String email;
   final String password;
   final String username;
-  final int phoneNumber;
+  final String phoneNumber;
 
   const AuthEventSignUp(
     this.email,
@@ -43,4 +43,16 @@ class AuthEventNavigateToSignUp extends AuthEvent {
 
 class AuthEventNavigateToSignIn extends AuthEvent {
   const AuthEventNavigateToSignIn();
+}
+
+class AuthEventNavigateToSettings extends AuthEvent {
+  const AuthEventNavigateToSettings();
+}
+
+class AuthEventNavigateToHomePage extends AuthEvent {
+  const AuthEventNavigateToHomePage();
+}
+
+class AuthEventNavigateToSavedPosts extends AuthEvent {
+  const AuthEventNavigateToSavedPosts();
 }

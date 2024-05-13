@@ -1,9 +1,12 @@
 import 'package:semsar/Models/check%20error/check_error_registeration.dart';
+import 'package:semsar/Models/user.dart';
 
 abstract class AuthAbstract {
   Future<CheckErrorRegisteration> signUp({
     required String email,
     required String password,
+    required String username,
+    required String phoneNumber,
   });
 
   Future<CheckErrorRegisteration> signIn({
@@ -11,5 +14,5 @@ abstract class AuthAbstract {
     required String password,
   });
 
-  Future<String?> getUserId();
+  Future<User?> getUser(String email);
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:semsar/constants/route_names.dart';
+import 'package:semsar/services/Authentication/bloc/auth_bloc.dart';
+import 'package:semsar/services/Authentication/bloc/auth_event.dart';
 import 'package:semsar/services/houses/house_services.dart';
 import 'package:semsar/widgets/custom_container.dart';
 import 'package:semsar/widgets/house_cards.dart';
@@ -17,11 +20,7 @@ class SavedHousesPage extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
             onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                homePageRotes,
-                (route) => false,
-              );
+              context.read<AuthBloc>().add(const AuthEventNavigateToHomePage());
             },
             icon: const Icon(Icons.arrow_back)),
         title: const Text(

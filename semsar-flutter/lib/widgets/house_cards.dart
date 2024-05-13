@@ -124,13 +124,22 @@ class HouseCards extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
-          Text(
-            '\$ ${house.houseDetails.price.round()}',
-            style: const TextStyle(
-              fontSize: 23,
-              color: AppColors.darkBrown,
-            ),
-          ),
+          (house.houseDetails.isForRent ||
+                  house.houseDetails.category == 'Hotel')
+              ? Text(
+                  '\$ ${house.houseDetails.rent.round()} / month',
+                  style: const TextStyle(
+                    fontSize: 23,
+                    color: AppColors.darkBrown,
+                  ),
+                )
+              : Text(
+                  '\$ ${house.houseDetails.price.round()}',
+                  style: const TextStyle(
+                    fontSize: 23,
+                    color: AppColors.darkBrown,
+                  ),
+                )
         ],
       ),
     );

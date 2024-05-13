@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:semsar/constants/app_colors.dart';
+import 'package:semsar/pages/Settings/settings_page.dart';
 import 'package:semsar/pages/home/home_page.dart';
 import 'package:semsar/pages/regesteration/sign_in.dart';
 import 'package:semsar/pages/regesteration/sign_up.dart';
+import 'package:semsar/pages/saved/saved_houses.dart';
 import 'package:semsar/routes/generated_routes.dart';
 import 'package:semsar/services/Authentication/authentication.dart';
 import 'package:semsar/services/Authentication/bloc/auth_bloc.dart';
@@ -13,9 +15,9 @@ import 'package:semsar/services/Authentication/bloc/auth_state.dart';
 
 void main() {
   HttpOverrides.global = DevHttpOverrides();
-  AppRoutes routes = AppRoutes();
+
   runApp(
-    BlocProvider<AuthBloc>(
+    BlocProvider(
       create: (context) => AuthBloc(Authentication()),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -25,7 +27,7 @@ void main() {
           useMaterial3: true,
         ),
         home: const MainRoute(),
-        onGenerateRoute: (settings) => routes.onGeneratedRoute(settings),
+        onGenerateRoute: (settings) => AppRoutes().onGeneratedRoute(settings),
       ),
     ),
   );
@@ -57,6 +59,12 @@ class MainRoute extends StatelessWidget {
           return const SignUpPage();
         } else if (state is AuthStateNavigateToSignIn) {
           return const SignInPage();
+        } else if (state is AuthStateNavigateToSettings) {
+          return const SettingsPage();
+        } else if (state is AuthStateNavigateToHomePage) {
+          return const HomePage();
+        } else if (state is AuthStateNavigateToSavedPosts) {
+          return const SavedHousesPage();
         }
         return Container();
       },

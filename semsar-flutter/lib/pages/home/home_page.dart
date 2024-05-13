@@ -93,10 +93,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      drawer: const HomeDrawer(
-        username: 'Ali Srour',
-        phoneNumber: '81986623',
-      ),
+      drawer: const HomeDrawer(),
     );
   }
 }

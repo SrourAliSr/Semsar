@@ -321,10 +321,17 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 ],
               ),
               const SizedBox(
-                height: 10,
+                height: 20,
               ),
-              const Text('Category: ', style: TextStyle(fontSize: 20)),
-              const SizedBox(height: 10),
+              const Text(
+                'Category: ',
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+              const SizedBox(
+                height: 13,
+              ),
               Wrap(
                 spacing: 8.0,
                 runSpacing: 8.0,
@@ -341,13 +348,15 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(100),
-                            border: Border.all(width: 1, color: Colors.black),
+                            border: Border.all(
+                                width: 1, color: Colors.grey.withOpacity(0.5)),
                             color: (selectedCategory == category)
                                 ? AppColors.orange
-                                : const Color.fromARGB(255, 244, 244, 244),
+                                : const Color.fromARGB(255, 240, 240, 240),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
                             child: Text(
                               category.toString().split('.').last,
                               style: const TextStyle(fontSize: 21),
@@ -359,7 +368,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                     .toList(),
               ),
               const SizedBox(
-                height: 10,
+                height: 20,
               ),
               const Text(
                 'Stars: ',
@@ -368,7 +377,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 ),
               ),
               const SizedBox(
-                height: 10,
+                height: 13,
               ),
               Wrap(
                 spacing: 8,
@@ -388,13 +397,15 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(100),
-                            border: Border.all(width: 1, color: Colors.black),
+                            border: Border.all(
+                                width: 1, color: Colors.grey.withOpacity(0.5)),
                             color: (selectedStars == index)
                                 ? AppColors.orange
-                                : const Color.fromARGB(255, 244, 244, 244),
+                                : const Color.fromARGB(255, 240, 240, 240),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
                             child: Text(
                               (index > 0) ? '${index - 1} Stars' : 'All',
                               style: const TextStyle(fontSize: 21),

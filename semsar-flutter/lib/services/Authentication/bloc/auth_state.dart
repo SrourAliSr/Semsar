@@ -40,3 +40,15 @@ class AuthStateNavigateToSignUp extends AuthState {
 class AuthStateNavigateToSignIn extends AuthState {
   const AuthStateNavigateToSignIn();
 }
+
+class AuthStateNavigateToSettings extends AuthState {
+  const AuthStateNavigateToSettings();
+}
+
+class AuthStateNavigateToHomePage extends AuthState {
+  const AuthStateNavigateToHomePage();
+}
+
+class AuthStateNavigateToSavedPosts extends AuthState {
+  const AuthStateNavigateToSavedPosts();
+}

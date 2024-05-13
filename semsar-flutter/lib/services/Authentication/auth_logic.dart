@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:semsar/Models/check%20error/check_error_registeration.dart';
 import 'package:semsar/Models/registeration_model.dart';
+import 'package:semsar/Models/user.dart';
 import 'package:semsar/constants/backend_url.dart';
 import 'package:semsar/constants/tokens.dart';
 import 'package:semsar/services/Authentication/auth_abstract.dart';
@@ -14,6 +15,8 @@ class AuthLogic implements AuthAbstract {
   Future<CheckErrorRegisteration> signUp({
     required String email,
     required String password,
+    required String username,
+    required String phoneNumber,
   }) async {
     CheckErrorRegisteration error = CheckErrorRegisteration();
 
@@ -26,17 +29,39 @@ class AuthLogic implements AuthAbstract {
       final request = await http.post(
         Uri.parse('$backendUrl/register'),
         headers: {
-          'Content-Type': 'application/json', // Set the content type to JSON
+          'Content-Type': 'application/json',
         },
         body: jsonFormat,
       );
 
       if (request.statusCode == 200) {
-        error.sucess = true;
+        await signIn(email: email, password: password);
 
-        error.errorMessage = null;
+        final token = Tokens.token;
 
-        return error;
+        final newJsonFormat = {
+          "email": email,
+          "phoneNumber": phoneNumber,
+          "username": username,
+        };
+
+        final request2 = await http.post(
+          Uri.parse('$backendUrl/api/User').replace(
+            queryParameters: newJsonFormat,
+          ),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'
+          },
+        );
+        if (request2.statusCode == 200) {
+          error.sucess = true;
+
+          error.errorMessage = null;
+
+          return error;
+        }
+        throw Exception(request2.body);
       }
       Map<String, dynamic> decodeExeption = jsonDecode(request.body);
 
@@ -112,7 +137,7 @@ class AuthLogic implements AuthAbstract {
   }
 
   @override
-  Future<String?> getUserId() async {
+  Future<User?> getUser(String email) async {
     final token = Tokens.token;
     HouseServices services = HouseServices();
 
@@ -120,24 +145,19 @@ class AuthLogic implements AuthAbstract {
       await services.refreshToken();
     }
 
-    final pref = await SharedPreferences.getInstance();
-
-    final email = pref.getString('email');
-
-    if (email == null || email == '') {
-      return null;
-    }
     final response = await http.get(
       Uri.parse('$backendUrl/api/User?email=$email'),
       headers: {'Auhtorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
-      return response.body;
+      final User user = User.fromJson(jsonDecode(response.body));
+
+      return user;
     } else if (response.statusCode == 401) {
       await services.refreshToken();
 
-      return await getUserId();
+      return await getUser(email);
     } else {
       return null;
     }

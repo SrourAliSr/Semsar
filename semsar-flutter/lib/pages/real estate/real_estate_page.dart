@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:semsar/Models/get_house.dart';
 import 'package:semsar/constants/app_colors.dart';
 import 'package:semsar/constants/route_names.dart';
-import 'package:semsar/services/Authentication/authentication.dart';
+import 'package:semsar/constants/user_settings.dart';
 import 'package:semsar/services/houses/house_services.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -25,8 +25,6 @@ class _RealEstatePageState extends State<RealEstatePage> {
   final PageController controller = PageController();
 
   HouseServices services = HouseServices();
-
-  final Authentication _auth = Authentication();
 
   List<String> houseMedia = [];
 
@@ -179,45 +177,40 @@ class _RealEstatePageState extends State<RealEstatePage> {
           ),
         ),
         actions: [
-          FutureBuilder(
-            future: _auth.getUserId(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done &&
-                  snapshot.data! == widget.realEstate.houseDetails.userId) {
-                return IconButton(
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      editHousePageRotes,
-                      arguments: {
-                        'oldData': widget.realEstate,
-                        'houseMedia': List<String>.from(houseMedia),
-                      },
-                    );
+          if (UserSettings.user!.userId ==
+              widget.realEstate.houseDetails.userId)
+            IconButton(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  editHousePageRotes,
+                  arguments: {
+                    'oldData': widget.realEstate,
+                    'houseMedia': List<String>.from(houseMedia),
                   },
-                  icon: const Icon(
-                    Icons.edit_outlined,
-                    color: AppColors.darkBrown,
-                    size: 38,
-                  ),
                 );
-              }
-              return IconButton(
-                onPressed: () async {
-                  final reposnse = await services
-                      .savePost(widget.realEstate.houseDetails.housesId);
-                  setState(() {
-                    isPostSaved = reposnse;
-                  });
-                },
-                icon: Icon(
-                  (isPostSaved) ? Icons.star : Icons.star_outline,
-                  color: AppColors.darkBrown,
-                  size: 38,
-                ),
-              );
-            },
-          ),
+              },
+              icon: const Icon(
+                Icons.edit_outlined,
+                color: AppColors.darkBrown,
+                size: 38,
+              ),
+            )
+          else
+            IconButton(
+              onPressed: () async {
+                final reposnse = await services
+                    .savePost(widget.realEstate.houseDetails.housesId);
+                setState(() {
+                  isPostSaved = reposnse;
+                });
+              },
+              icon: Icon(
+                (isPostSaved) ? Icons.star : Icons.star_outline,
+                color: AppColors.darkBrown,
+                size: 38,
+              ),
+            ),
           IconButton(
             onPressed: () {},
             icon: const Icon(
@@ -357,20 +350,21 @@ class _RealEstatePageState extends State<RealEstatePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _propertyConainer(
-                      'For Sale',
-                    ),
-                    _propertyConainer(
-                      'For Rent',
-                    ),
+                    if (widget.realEstate.houseDetails.isForSale)
+                      _propertyConainer(
+                        'For Sale',
+                      ),
+                    if (widget.realEstate.houseDetails.isForRent)
+                      _propertyConainer(
+                        'For Rent',
+                      ),
                     _propertyConainer(
                       widget.realEstate.houseDetails.category,
                     ),
-                    (widget.realEstate.houseDetails.category == 'Hotel')
-                        ? _propertyConainer(
-                            'Rating ${widget.realEstate.houseDetails.rating.round()}',
-                          )
-                        : const SizedBox(),
+                    if (widget.realEstate.houseDetails.category == 'Hotel')
+                      _propertyConainer(
+                        'Rating ${widget.realEstate.houseDetails.rating.round()}',
+                      )
                   ],
                 ),
                 const SizedBox(
@@ -418,7 +412,9 @@ class _RealEstatePageState extends State<RealEstatePage> {
                                 ? widget.realEstate.houseDetails.rent.round()
                                 : widget.realEstate.houseDetails.price.round(),
                           ) +
-                          ((widget.realEstate.houseDetails.category == 'Hotel')
+                          ((widget.realEstate.houseDetails.category ==
+                                      'Hotel' ||
+                                  widget.realEstate.houseDetails.isForRent)
                               ? '/Month'
                               : ''),
                       Icons.price_change_outlined,

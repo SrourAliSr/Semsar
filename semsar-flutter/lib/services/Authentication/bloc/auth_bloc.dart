@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:semsar/Models/check%20error/check_error_registeration.dart';
+import 'package:semsar/Models/user.dart';
+import 'package:semsar/constants/user_settings.dart';
 import 'package:semsar/services/Authentication/authentication.dart';
 import 'package:semsar/services/Authentication/bloc/auth_event.dart';
 import 'package:semsar/services/Authentication/bloc/auth_state.dart';
@@ -9,13 +11,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(Authentication auth) : super(const AuthStateInit()) {
     on<AuthEventInit>(
       (event, emit) async {
-        final peref = await SharedPreferences.getInstance();
+        var pref = await SharedPreferences.getInstance();
 
-        var data = peref.getString('email');
+        final userId = pref.getString('userId');
 
-        if (data == null || data.isEmpty) {
+        if (userId == null || userId == '') {
           emit(const AuthStateLogout());
         } else {
+          final email = pref.getString('email');
+
+          final username = pref.getString('username');
+
+          final phoneNumber = pref.getString('phoneNumber');
+
+          final User user = User(
+            userId: userId,
+            email: email!,
+            userName: username ?? "",
+            phoneNumber: phoneNumber ?? "",
+          );
+
+          UserSettings.user = user;
+
           emit(const AuthStateSignIn());
         }
       },
@@ -33,6 +50,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             ),
           );
         } else {
+          final user = await auth.getUser(event.email);
+
+          var pref = await SharedPreferences.getInstance();
+
+          await pref.setString('userId', user!.userId);
+
+          await pref.setString('email', user.email);
+
+          await pref.setString('username', user.userName);
+
+          await pref.setString('phoneNumber', user.phoneNumber);
+
+          UserSettings.user = user;
+
           emit(const AuthStateSignIn());
         }
       },
@@ -48,6 +79,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final response = await auth.signUp(
         email: event.email,
         password: event.password,
+        username: event.username,
+        phoneNumber: event.phoneNumber,
       );
       if (!response.sucess) {
         emit(AuthStateSignUpError(response.errorMessage));
@@ -63,6 +96,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthEventNavigateToSignUp>(
       (event, emit) => emit(
         const AuthStateNavigateToSignUp(),
+      ),
+    );
+    on<AuthEventNavigateToSettings>(
+      (event, emit) => emit(
+        const AuthStateNavigateToSettings(),
+      ),
+    );
+    on<AuthEventNavigateToHomePage>(
+      (event, emit) => emit(
+        const AuthStateNavigateToHomePage(),
+      ),
+    );
+    on<AuthEventNavigateToSavedPosts>(
+      (event, emit) => emit(
+        const AuthStateNavigateToSavedPosts(),
       ),
     );
   }

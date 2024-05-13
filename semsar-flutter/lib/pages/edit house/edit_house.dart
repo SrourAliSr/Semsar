@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,7 +8,6 @@ import 'package:semsar/Models/add_new_house_model.dart';
 import 'package:semsar/Models/get_house.dart';
 import 'package:semsar/constants/app_colors.dart';
 import 'package:semsar/constants/route_names.dart';
-import 'package:semsar/pages/add%20house/add_house_photo_viewer.dart';
 import 'package:semsar/pages/add%20house/category_drop_down_menu.dart';
 import 'package:semsar/pages/add%20house/city_drop_down_menu.dart';
 import 'package:semsar/services/houses/house_services.dart';

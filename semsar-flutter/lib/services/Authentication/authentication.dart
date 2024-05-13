@@ -1,4 +1,5 @@
 import 'package:semsar/Models/check%20error/check_error_registeration.dart';
+import 'package:semsar/Models/user.dart';
 import 'package:semsar/services/Authentication/auth_abstract.dart';
 import 'package:semsar/services/Authentication/auth_logic.dart';
 
@@ -9,10 +10,14 @@ class Authentication implements AuthAbstract {
   Future<CheckErrorRegisteration> signUp({
     required String email,
     required String password,
+    required String username,
+    required String phoneNumber,
   }) async =>
       await _auth.signUp(
         email: email,
         password: password,
+        username: username,
+        phoneNumber: phoneNumber,
       );
 
   @override
@@ -26,5 +31,5 @@ class Authentication implements AuthAbstract {
       );
 
   @override
-  Future<String?> getUserId() async => await _auth.getUserId();
+  Future<User?> getUser(String email) async => await _auth.getUser(email);
 }

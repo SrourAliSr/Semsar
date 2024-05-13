@@ -7,12 +7,10 @@ import 'package:http/http.dart' as http;
 import 'package:semsar/Models/search_values_model.dart';
 import 'package:semsar/constants/backend_url.dart';
 import 'package:semsar/constants/tokens.dart';
-import 'package:semsar/services/Authentication/authentication.dart';
+import 'package:semsar/constants/user_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HouseServices {
-  final Authentication _auth = Authentication();
-
   Future<bool> refreshToken() async {
     final pref = await SharedPreferences.getInstance();
 
@@ -53,9 +51,7 @@ class HouseServices {
 
   //get requests
   Future<List<GetHouse>> getAllHouses(String city, SearchFilter filters) async {
-    Authentication auth = Authentication();
-
-    final userId = await auth.getUserId();
+    final userId = UserSettings.user!.userId;
     // ignore: avoid_print
     print(Tokens.token ?? "");
 
@@ -184,7 +180,7 @@ class HouseServices {
       await refreshToken();
     }
     try {
-      final userId = await _auth.getUserId();
+      final userId = UserSettings.user!.userId;
 
       final response = await http.get(
         Uri.parse(
@@ -217,7 +213,7 @@ class HouseServices {
       await refreshToken();
     }
     try {
-      final userId = await _auth.getUserId();
+      final userId = UserSettings.user!.userId;
 
       final response = await http.get(
         Uri.parse(
@@ -286,7 +282,7 @@ class HouseServices {
     }
 
     try {
-      final userId = await _auth.getUserId();
+      final userId = UserSettings.user!.userId;
 
       final encodedBody = jsonEncode(
         {
@@ -327,7 +323,7 @@ class HouseServices {
     }
 
     try {
-      final userId = await _auth.getUserId();
+      final userId = UserSettings.user!.userId;
 
       final encodedBody = jsonEncode(
         {

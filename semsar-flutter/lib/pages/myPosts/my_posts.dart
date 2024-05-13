@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:semsar/constants/route_names.dart';
-import 'package:semsar/pages/home/home_page.dart';
-import 'package:semsar/pages/real%20estate/real_estate_page.dart';
 import 'package:semsar/services/houses/house_services.dart';
 import 'package:semsar/widgets/custom_container.dart';
 import 'package:semsar/widgets/house_cards.dart';
@@ -17,15 +15,15 @@ class MyPostsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                homePageRotes,
-                (route) => false,
-              );
-            },
-            icon: const Icon(Icons.arrow_back)),
+        // leading: IconButton(
+        //     onPressed: () {
+        //       Navigator.pushNamedAndRemoveUntil(
+        //         context,
+        //         homePageRotes,
+        //         (route) => false,
+        //       );
+        //     },
+        //     icon: const Icon(Icons.arrow_back)),
         title: const Text(
           'My Posts',
         ),

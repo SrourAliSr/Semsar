@@ -16,6 +16,14 @@ import 'package:semsar/services/Authentication/bloc/auth_bloc.dart';
 class AppRoutes {
   final AuthBloc _authBloc = AuthBloc(Authentication());
 
+  static final AppRoutes _singleton = AppRoutes._internal();
+
+  factory AppRoutes() {
+    return _singleton;
+  }
+
+  AppRoutes._internal();
+
   Route? onGeneratedRoute(RouteSettings routeSettings) {
     switch (routeSettings.name) {
       case realStatePageRotes:

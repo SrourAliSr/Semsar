@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Semsar.Models;
 using Semsar.Models.Services;
 
 namespace Semsar.Controllers
@@ -14,18 +15,31 @@ namespace Semsar.Controllers
         {
             _services = services;
         }
-
         [HttpGet]
-        public ActionResult<string> GetUserIdByEmail(string email)
+        public ActionResult<User> GetUser(string email)
         {
-            string? userId =  _services.GetCurrentUserByEmail(email);
+            var user = _services.GetUser(email);
 
-            if (userId == null)
+            if (user == null)
             {
-                return NotFound("User not founded");
+                return NotFound("User is not available");
             }
+            return Ok(user);
+        }
 
-            return Ok(userId);
+        [HttpPost]
+        public ActionResult CreateUsernameAndPhoneNumber(string email, string phoneNumber, string username) 
+        { 
+            var success = _services.CreateUsernameAndPhoneNumber(email,  username, phoneNumber);
+
+            if(!success)
+            {
+                return BadRequest("Somethin went wrong");
+            }
+            else
+            {
+                return Ok(success);
+            }
         }
     }
 }

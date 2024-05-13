@@ -10,6 +10,11 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              context.read<AuthBloc>().add(const AuthEventNavigateToHomePage());
+            },
+            icon: const Icon(Icons.arrow_back)),
         title: const Text('Settings'),
         centerTitle: true,
       ),

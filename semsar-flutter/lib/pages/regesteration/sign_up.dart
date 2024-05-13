@@ -22,6 +22,10 @@ class _SignUpPageState extends State<SignUpPage> {
 
   late TextEditingController password;
 
+  late TextEditingController username;
+
+  late TextEditingController phoneNumber;
+
   Authentication registeration = Authentication();
 
   @override
@@ -29,6 +33,10 @@ class _SignUpPageState extends State<SignUpPage> {
     email = TextEditingController();
 
     password = TextEditingController();
+
+    username = TextEditingController();
+
+    phoneNumber = TextEditingController();
 
     registeration = Authentication();
 
@@ -81,6 +89,33 @@ class _SignUpPageState extends State<SignUpPage> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       labelText: 'Email',
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TextField(
+                    controller: username,
+                    autocorrect: false,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      labelText: 'Username',
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  TextField(
+                    controller: phoneNumber,
+                    keyboardType: TextInputType.emailAddress,
+                    autocorrect: false,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      labelText: 'Phone Number',
                     ),
                   ),
                   const SizedBox(
@@ -149,8 +184,8 @@ class _SignUpPageState extends State<SignUpPage> {
                             AuthEventSignUp(
                               email.text,
                               password.text,
-                              '',
-                              999999,
+                              username.text,
+                              phoneNumber.text,
                             ),
                           );
                     },

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:semsar/constants/app_colors.dart';
 import 'package:semsar/constants/route_names.dart';
+import 'package:semsar/constants/user_settings.dart';
+import 'package:semsar/services/Authentication/bloc/auth_bloc.dart';
+import 'package:semsar/services/Authentication/bloc/auth_event.dart';
 
 class HomeDrawer extends StatelessWidget {
-  final String username;
-  final String phoneNumber;
   const HomeDrawer({
     super.key,
-    required this.username,
-    required this.phoneNumber,
   });
 
   @override
@@ -27,6 +27,7 @@ class HomeDrawer extends StatelessWidget {
                 children: [
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const CircleAvatar(
                         radius: 50,
@@ -41,7 +42,7 @@ class HomeDrawer extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            username,
+                            UserSettings.user!.userName,
                             style: const TextStyle(
                               fontSize: 26,
                               color: AppColors.cinderella,
@@ -49,7 +50,7 @@ class HomeDrawer extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            phoneNumber,
+                            UserSettings.user!.phoneNumber,
                             style: const TextStyle(
                               fontSize: 20,
                               color: AppColors.cinderella,
@@ -77,10 +78,7 @@ class HomeDrawer extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(
-                context,
-                settingsPageRotes,
-              );
+              context.read<AuthBloc>().add(const AuthEventNavigateToSettings());
             },
             child: const _DrawerItems(
               icon: Icons.settings_outlined,
@@ -89,11 +87,9 @@ class HomeDrawer extends StatelessWidget {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                savedPageRotes,
-                (route) => false,
-              );
+              context
+                  .read<AuthBloc>()
+                  .add(const AuthEventNavigateToSavedPosts());
             },
             child: const _DrawerItems(
               icon: Icons.star,
