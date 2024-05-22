@@ -2,53 +2,63 @@ import 'package:flutter/foundation.dart' show immutable;
 
 @immutable
 abstract class AuthState {
-  const AuthState();
+  final bool isLoading;
+  final String? loadingText;
+  const AuthState(
+      {required this.isLoading, this.loadingText = "Please wait a moment"});
 }
 
 class AuthStateInit extends AuthState {
-  const AuthStateInit();
+  const AuthStateInit({required super.isLoading});
 }
 
 class AuthStateSignUp extends AuthState {
-  const AuthStateSignUp();
+  const AuthStateSignUp({required super.isLoading});
 }
 
 class AuthStateSignIn extends AuthState {
-  const AuthStateSignIn();
+  final Exception? exception;
+  const AuthStateSignIn({this.exception, required super.isLoading});
 }
 
 class AuthStateLogout extends AuthState {
-  const AuthStateLogout();
+  final Exception? exception;
+  const AuthStateLogout({
+    this.exception,
+    super.loadingText,
+    required super.isLoading,
+  });
 }
 
 class AuthStateSignUpError extends AuthState {
-  final String? errorMessage;
+  final Exception? exception;
 
-  const AuthStateSignUpError(this.errorMessage);
+  const AuthStateSignUpError({this.exception, required super.isLoading});
 }
 
 class AuthStateSignInError extends AuthState {
-  final String? errorMessage;
+  final Exception? exception;
 
-  const AuthStateSignInError(this.errorMessage);
+  const AuthStateSignInError({this.exception, required super.isLoading});
 }
 
 class AuthStateNavigateToSignUp extends AuthState {
-  const AuthStateNavigateToSignUp();
+  const AuthStateNavigateToSignUp(
+      {super.loadingText, required super.isLoading});
 }
 
 class AuthStateNavigateToSignIn extends AuthState {
-  const AuthStateNavigateToSignIn();
+  const AuthStateNavigateToSignIn({required super.isLoading});
 }
 
 class AuthStateNavigateToSettings extends AuthState {
-  const AuthStateNavigateToSettings();
+  const AuthStateNavigateToSettings({required super.isLoading});
 }
 
 class AuthStateNavigateToHomePage extends AuthState {
-  const AuthStateNavigateToHomePage();
+  const AuthStateNavigateToHomePage({required super.isLoading});
 }
 
 class AuthStateNavigateToSavedPosts extends AuthState {
-  const AuthStateNavigateToSavedPosts();
+  const AuthStateNavigateToSavedPosts({required super.isLoading});
 }

@@ -3,6 +3,7 @@ import 'package:semsar/constants/route_names.dart';
 import 'package:semsar/services/houses/house_services.dart';
 import 'package:semsar/widgets/custom_container.dart';
 import 'package:semsar/widgets/house_cards.dart';
+import 'package:semsar/widgets/floating_add_button.dart';
 
 class MyPostsPage extends StatelessWidget {
   const MyPostsPage({super.key});
@@ -15,15 +16,6 @@ class MyPostsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        // leading: IconButton(
-        //     onPressed: () {
-        //       Navigator.pushNamedAndRemoveUntil(
-        //         context,
-        //         homePageRotes,
-        //         (route) => false,
-        //       );
-        //     },
-        //     icon: const Icon(Icons.arrow_back)),
         title: const Text(
           'My Posts',
         ),
@@ -83,6 +75,7 @@ class MyPostsPage extends StatelessWidget {
           },
         ),
       ),
+      floatingActionButton: const FloatingAddButton(),
     );
   }
 }

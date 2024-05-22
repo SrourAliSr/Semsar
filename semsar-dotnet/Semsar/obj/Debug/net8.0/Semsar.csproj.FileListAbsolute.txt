@@ -285,3 +285,14 @@ C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\obj\Debug\net8.0\ref
 C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\obj\Debug\net8.0\Semsar.pdb
 C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\obj\Debug\net8.0\Semsar.genruntimeconfig.cache
 C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\obj\Debug\net8.0\ref\Semsar.dll
+C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\bin\Debug\net8.0\Microsoft.AspNetCore.Connections.Abstractions.dll
+C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\bin\Debug\net8.0\Microsoft.AspNetCore.Http.Connections.Client.dll
+C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\bin\Debug\net8.0\Microsoft.AspNetCore.Http.Connections.Common.dll
+C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\bin\Debug\net8.0\Microsoft.AspNetCore.SignalR.Client.dll
+C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\bin\Debug\net8.0\Microsoft.AspNetCore.SignalR.Client.Core.dll
+C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\bin\Debug\net8.0\Microsoft.AspNetCore.SignalR.Common.dll
+C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\bin\Debug\net8.0\Microsoft.AspNetCore.SignalR.Protocols.Json.dll
+C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\bin\Debug\net8.0\Microsoft.Extensions.Features.dll
+C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\srour\Desktop\projects\semsar\semsar-dotnet\Semsar\bin\Debug\net8.0\System.Web.Cors.dll

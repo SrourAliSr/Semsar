@@ -24,11 +24,16 @@ class Authentication implements AuthAbstract {
   Future<CheckErrorRegisteration> signIn({
     required String email,
     required String password,
-  }) async =>
-      await _auth.signIn(
+  }) async {
+    try {
+      return await _auth.signIn(
         email: email,
         password: password,
       );
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   @override
   Future<User?> getUser(String email) async => await _auth.getUser(email);

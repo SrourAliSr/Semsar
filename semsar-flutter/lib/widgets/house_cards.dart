@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:semsar/Models/get_house.dart';
@@ -14,11 +13,9 @@ class HouseCards extends StatelessWidget {
     required this.setImage,
   });
 
-  Future<Widget> _loadImages(String imageData) async {
-    final Uint8List imageBytes = await Isolate.run(
-      () => base64.decode(
-        imageData,
-      ),
+  Widget _loadImages(String imageData) {
+    final Uint8List imageBytes = base64.decode(
+      imageData,
     );
     Widget i = Image.memory(
       imageBytes,
@@ -80,19 +77,8 @@ class HouseCards extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          FutureBuilder(
-            future: _loadImages(
-              house.houseMedia.media,
-            ),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return snapshot.data!;
-              }
-              return const SizedBox(
-                width: double.infinity,
-                height: 80,
-              );
-            },
+          _loadImages(
+            house.houseMedia.media,
           ),
           const SizedBox(
             height: 10,

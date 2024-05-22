@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:semsar/Models/check%20error/check_error_registeration.dart';
 import 'package:semsar/Models/user.dart';
 import 'package:semsar/constants/user_settings.dart';
 import 'package:semsar/services/Authentication/authentication.dart';
@@ -8,7 +7,7 @@ import 'package:semsar/services/Authentication/bloc/auth_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc(Authentication auth) : super(const AuthStateInit()) {
+  AuthBloc(Authentication auth) : super(const AuthStateInit(isLoading: false)) {
     on<AuthEventInit>(
       (event, emit) async {
         var pref = await SharedPreferences.getInstance();
@@ -16,7 +15,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final userId = pref.getString('userId');
 
         if (userId == null || userId == '') {
-          emit(const AuthStateLogout());
+          emit(const AuthStateLogout(
+            isLoading: false,
+          ));
         } else {
           final email = pref.getString('email');
 
@@ -33,49 +34,83 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           UserSettings.user = user;
 
-          emit(const AuthStateSignIn());
+          emit(
+            const AuthStateSignIn(
+              isLoading: false,
+            ),
+          );
         }
       },
     );
     on<AuthEventSignIn>(
       (event, emit) async {
-        final CheckErrorRegisteration response = await auth.signIn(
-          email: event.email,
-          password: event.password,
+        emit(
+          const AuthStateLogout(
+            exception: null,
+            isLoading: true,
+          ),
         );
-        if (!response.sucess) {
+        try {
+          final response = await auth.signIn(
+            email: event.email,
+            password: event.password,
+          );
+          if (response.sucess) {
+            final user = await auth.getUser(event.email);
+
+            var pref = await SharedPreferences.getInstance();
+
+            await pref.setString('userId', user!.userId);
+
+            await pref.setString('email', user.email);
+
+            await pref.setString('username', user.userName);
+
+            await pref.setString('phoneNumber', user.phoneNumber);
+
+            UserSettings.user = user;
+
+            emit(
+              const AuthStateSignIn(
+                isLoading: false,
+              ),
+            );
+          } else {
+            throw Exception('Something went wrong');
+          }
+        } on Exception catch (e) {
           emit(
-            AuthStateSignInError(
-              response.errorMessage,
+            AuthStateLogout(
+              exception: e,
+              loadingText: e.toString().split('Exception: ').last,
+              isLoading: true,
             ),
           );
-        } else {
-          final user = await auth.getUser(event.email);
-
-          var pref = await SharedPreferences.getInstance();
-
-          await pref.setString('userId', user!.userId);
-
-          await pref.setString('email', user.email);
-
-          await pref.setString('username', user.userName);
-
-          await pref.setString('phoneNumber', user.phoneNumber);
-
-          UserSettings.user = user;
-
-          emit(const AuthStateSignIn());
         }
       },
     );
     on<AuthEventLogout>(
       (event, emit) async {
+        emit(
+          const AuthStateLogout(
+            isLoading: true,
+          ),
+        );
         final pref = await SharedPreferences.getInstance();
         await pref.clear();
-        emit(const AuthStateLogout());
+        emit(
+          const AuthStateLogout(
+            isLoading: false,
+          ),
+        );
       },
     );
     on<AuthEventSignUp>((event, emit) async {
+      emit(
+        const AuthStateNavigateToSignUp(
+          isLoading: true,
+        ),
+      );
       final response = await auth.signUp(
         email: event.email,
         password: event.password,
@@ -83,34 +118,43 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         phoneNumber: event.phoneNumber,
       );
       if (!response.sucess) {
-        emit(AuthStateSignUpError(response.errorMessage));
+        emit(
+          AuthStateNavigateToSignUp(
+            loadingText: response.errorMessage.toString(),
+            isLoading: true,
+          ),
+        );
       } else {
-        emit(const AuthStateLogout());
+        emit(
+          const AuthStateLogout(
+            isLoading: false,
+          ),
+        );
       }
     });
     on<AuthEventNavigateToSignIn>(
       (event, emit) => emit(
-        const AuthStateNavigateToSignIn(),
+        const AuthStateNavigateToSignIn(isLoading: false),
       ),
     );
     on<AuthEventNavigateToSignUp>(
       (event, emit) => emit(
-        const AuthStateNavigateToSignUp(),
+        const AuthStateNavigateToSignUp(isLoading: false),
       ),
     );
     on<AuthEventNavigateToSettings>(
       (event, emit) => emit(
-        const AuthStateNavigateToSettings(),
+        const AuthStateNavigateToSettings(isLoading: false),
       ),
     );
     on<AuthEventNavigateToHomePage>(
       (event, emit) => emit(
-        const AuthStateNavigateToHomePage(),
+        const AuthStateNavigateToHomePage(isLoading: false),
       ),
     );
     on<AuthEventNavigateToSavedPosts>(
       (event, emit) => emit(
-        const AuthStateNavigateToSavedPosts(),
+        const AuthStateNavigateToSavedPosts(isLoading: false),
       ),
     );
   }

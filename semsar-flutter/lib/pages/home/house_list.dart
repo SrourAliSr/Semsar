@@ -93,6 +93,7 @@ class HouseList extends StatelessWidget {
             highlightColor:
                 const Color.fromARGB(255, 190, 190, 190).withOpacity(0.2),
             child: ListView(
+              physics: const NeverScrollableScrollPhysics(),
               children: [
                 ...List.generate(
                   5,

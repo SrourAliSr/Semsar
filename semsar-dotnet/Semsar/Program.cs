@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Semsar.Data;
+using Semsar.Hubs;
 using Semsar.Models.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +14,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSignalR();
+
+builder.Services.AddResponseCompression(options =>
+    options.MimeTypes = ResponseCompressionDefaults.
+    MimeTypes.
+    Concat(new[] { "application/octet-stream" })
+    );
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", builder =>
+    {
+        builder.WithOrigins("http://localhost:5554") // Replace with your Flutter app's URL
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials();
+    });
+});
+
 
 builder.Services.AddSwaggerGen(opt =>
 {
@@ -58,6 +81,7 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>()
 builder.Services.AddScoped<HousesServices>();
 builder.Services.AddScoped<UserServices>();
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -75,6 +99,12 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapIdentityApi<IdentityUser>();
+
+app.UseResponseCompression();
+
+app.MapHub<Chats>("/chatHub");
+
+app.UseCors("CorsPolicy");
 
 
 app.Run();

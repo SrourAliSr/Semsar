@@ -72,7 +72,8 @@ class AuthLogic implements AuthAbstract {
     } catch (e) {
       error.sucess = false;
 
-      error.errorMessage = e.toString().replaceFirst('Exception: ', '');
+      // error.errorMessage = e.toString().replaceFirst('Exception: ', '');
+      error.errorMessage = e;
 
       return error;
     }
@@ -130,9 +131,9 @@ class AuthLogic implements AuthAbstract {
     } catch (e) {
       error.sucess = false;
 
-      error.errorMessage = e.toString().replaceFirst('Exception: ', '');
-
-      return error;
+      // error.errorMessage = e.toString().replaceFirst('Exception: ', '');
+      error.errorMessage = e;
+      rethrow;
     }
   }
 

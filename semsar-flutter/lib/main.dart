@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:semsar/constants/app_colors.dart';
+import 'package:semsar/helpers/loading_screen.dart';
 import 'package:semsar/pages/Settings/settings_page.dart';
 import 'package:semsar/pages/home/home_page.dart';
 import 'package:semsar/pages/regesteration/sign_in.dart';
@@ -47,14 +48,6 @@ class MainRoute extends StatelessWidget {
           return const HomePage();
         } else if (state is AuthStateSignUp) {
           return const SignUpPage();
-        } else if (state is AuthStateSignInError) {
-          return SignInPage(
-            errorMessage: state.errorMessage,
-          );
-        } else if (state is AuthStateSignUpError) {
-          return SignUpPage(
-            errorMessage: state.errorMessage,
-          );
         } else if (state is AuthStateNavigateToSignUp) {
           return const SignUpPage();
         } else if (state is AuthStateNavigateToSignIn) {
@@ -68,7 +61,23 @@ class MainRoute extends StatelessWidget {
         }
         return Container();
       },
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state.isLoading) {
+          LoadingScreen().show(
+            context,
+            state.loadingText ?? 'Please wait a moment',
+          );
+          if (state.loadingText != 'Please wait a moment') {
+            // Future.delayed(const Duration(seconds: 3))
+            //     .then((value) => LoadingScreen().hide());
+            LoadingScreen().hide();
+            showErrorAlert(
+                context, state.loadingText ?? "Something went wrong");
+          }
+        } else {
+          return LoadingScreen().hide();
+        }
+      },
     );
   }
 }
@@ -80,4 +89,26 @@ class DevHttpOverrides extends HttpOverrides {
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
   }
+}
+
+Future<void> showErrorAlert(BuildContext context, String error) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text(
+          'Error',
+        ),
+        content: Text(
+          error,
+          style: const TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Ok'))
+        ],
+      );
+    },
+  );
 }
