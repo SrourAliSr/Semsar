@@ -15,3 +15,7 @@ const myPostsPageRotes = '/My Posts Page/';
 const homePageRotes = '/Home Page/';
 
 const addHousePageRotes = '/Add House Page/';
+
+const chatPageRotes = '/chat Page/';
+
+const chatRoomRotes = '/chat Room Page/';

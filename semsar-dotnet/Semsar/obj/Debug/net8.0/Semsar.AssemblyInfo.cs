@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Semsar")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+19dcbd3de87c7f4434f072417925d369a9e33226")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7b4dc47fd52f206ca0d6dcf6e31387b8aad95a5a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Semsar")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Semsar")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

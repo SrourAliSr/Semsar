@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Semsar.Data;
 using Semsar.Hubs;
+using Semsar.Models.chat;
 using Semsar.Models.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,14 @@ builder.Services.AddResponseCompression(options =>
     MimeTypes.
     Concat(new[] { "application/octet-stream" })
     );
+
+var handler = new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback = (HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors) => true
+};
+
+var client = new HttpClient(handler);
+
 
 builder.Services.AddCors(options =>
 {
@@ -80,6 +89,7 @@ builder.Services.AddIdentityApiEndpoints<IdentityUser>()
 
 builder.Services.AddScoped<HousesServices>();
 builder.Services.AddScoped<UserServices>();
+builder.Services.AddSingleton<SharedDb>();
 
 
 var app = builder.Build();

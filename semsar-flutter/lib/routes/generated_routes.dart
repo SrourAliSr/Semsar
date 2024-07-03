@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:semsar/chat/chat_room.dart';
+import 'package:semsar/chat/chatpage.dart';
 import 'package:semsar/constants/route_names.dart';
 import 'package:semsar/pages/Settings/settings_page.dart';
 import 'package:semsar/pages/add%20house/add_house.dart';
@@ -103,6 +105,27 @@ class AppRoutes {
             child: const HomePage(),
           ),
         );
+      case chatPageRotes:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: _authBloc,
+            child: const ChatsPage(),
+          ),
+        );
+      case chatRoomRotes:
+        final args = routeSettings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: _authBloc,
+            child: ChatRoom(
+              chatRoom: args["chatRoom"],
+              receiverName: args["receiverName"],
+              receiverId: args["receiverId"],
+              isNewChat: args["isNewChat"],
+            ),
+          ),
+        );
+
       case addHousePageRotes:
         return MaterialPageRoute(
           builder: (_) => BlocProvider.value(

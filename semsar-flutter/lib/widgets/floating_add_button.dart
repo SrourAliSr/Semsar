@@ -7,9 +7,10 @@ class FloatingAddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: 80,
       height: 80,
+      margin: const EdgeInsets.only(top: 30),
       child: FloatingActionButton(
         shape: const CircleBorder(),
         backgroundColor: AppColors.orange,

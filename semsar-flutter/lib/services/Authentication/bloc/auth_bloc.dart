@@ -1,10 +1,17 @@
+import 'dart:async';
+import 'dart:developer';
 import 'package:bloc/bloc.dart';
+import 'package:semsar/Models/message.dart';
 import 'package:semsar/Models/user.dart';
+import 'package:semsar/constants/hub_connection.dart';
+import 'package:semsar/constants/tokens.dart';
 import 'package:semsar/constants/user_settings.dart';
 import 'package:semsar/services/Authentication/authentication.dart';
 import 'package:semsar/services/Authentication/bloc/auth_event.dart';
 import 'package:semsar/services/Authentication/bloc/auth_state.dart';
+import 'package:semsar/services/curd/crud_db.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:signalr_core/signalr_core.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(Authentication auth) : super(const AuthStateInit(isLoading: false)) {
@@ -19,6 +26,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             isLoading: false,
           ));
         } else {
+          SemsarDb db = SemsarDb();
+
           final email = pref.getString('email');
 
           final username = pref.getString('username');
@@ -31,14 +40,91 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             userName: username ?? "",
             phoneNumber: phoneNumber ?? "",
           );
-
           UserSettings.user = user;
 
-          emit(
-            const AuthStateSignIn(
-              isLoading: false,
-            ),
-          );
+          try {
+            emit(
+              const AuthStateSignIn(
+                isLoading: false,
+              ),
+            );
+            await db.open();
+
+            await db.getOrCreateUser(user: user);
+            Timer.periodic(
+              const Duration(minutes: 55),
+              (timer) async {
+                await auth.refreshToken();
+              },
+            );
+
+            await auth.refreshToken();
+
+            final token = Tokens.token;
+            if (token == null) {
+              emit(const AuthStateLogout(isLoading: false));
+            } else {
+              hubConnection = HubConnectionBuilder()
+                  .withUrl(
+                      'https://10.0.2.2:8000/chatHub?id=$token',
+                      HttpConnectionOptions(
+                        accessTokenFactory: () async => token,
+                        logging: (level, message) => log(message),
+                        transport: HttpTransportType.longPolling,
+                      ))
+                  .withAutomaticReconnect()
+                  .build();
+
+              try {
+                await hubConnection!.start();
+
+                final List<dynamic> messages = await hubConnection!.invoke(
+                  "GetTempMessages",
+                  args: [userId],
+                );
+
+                for (var message in messages) {
+                  if (userId != message["senderId"]) {
+                    await db.addChatRoom(
+                      userId: userId,
+                      reciverId: message["senderId"],
+                      reciverName: message["senderName"],
+                    );
+
+                    final Message tempMessage = Message.fromMap(message);
+
+                    await db.saveMessage(message: tempMessage);
+                  }
+                }
+
+                hubConnection!.on('ReceiveMessage', (message) async {
+                  log('Message Received: ${message?[0]["chatRoom"]}');
+
+                  final newMessage = message?[0];
+                  log('begin');
+                  if (message?[0]["senderId"] != userId) {
+                    await db.addChatRoom(
+                      userId: userId,
+                      reciverId: newMessage["senderId"],
+                      reciverName: newMessage["senderName"],
+                    );
+                  }
+                  final Message tempMessage = Message.fromMap(newMessage);
+
+                  await db.saveMessage(message: tempMessage);
+
+                  message?.map((e) async => await db.saveMessage(message: e));
+                  log("start");
+                });
+
+                log('Connected to SignalR');
+              } catch (e) {
+                log('Connection Error: $e');
+              }
+            }
+          } catch (e) {
+            log(e.toString());
+          }
         }
       },
     );
@@ -91,6 +177,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     on<AuthEventLogout>(
       (event, emit) async {
+        await hubConnection!.stop();
+
         emit(
           const AuthStateLogout(
             isLoading: true,

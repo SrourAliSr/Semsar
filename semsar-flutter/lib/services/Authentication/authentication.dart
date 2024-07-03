@@ -37,4 +37,7 @@ class Authentication implements AuthAbstract {
 
   @override
   Future<User?> getUser(String email) async => await _auth.getUser(email);
+
+  @override
+  Future<bool> refreshToken() async => _auth.refreshToken();
 }

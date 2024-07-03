@@ -211,14 +211,32 @@ class _RealEstatePageState extends State<RealEstatePage> {
                 size: 38,
               ),
             ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.chat_outlined,
-              color: AppColors.darkBrown,
-              size: 35,
+          if (widget.realEstate.houseDetails.userId !=
+              UserSettings.user!.userId)
+            IconButton(
+              onPressed: () {
+                final ids = [
+                  UserSettings.user!.userId,
+                  widget.realEstate.houseDetails.userId
+                ];
+                ids.sort();
+
+                Navigator.of(context).pushNamed(
+                  chatRoomRotes,
+                  arguments: {
+                    "chatRoom": ids.join("_"),
+                    "receiverName": "anynmouse",
+                    "receiverId": widget.realEstate.houseDetails.userId,
+                    "isNewChat": true,
+                  },
+                );
+              },
+              icon: const Icon(
+                Icons.chat_outlined,
+                color: AppColors.darkBrown,
+                size: 35,
+              ),
             ),
-          ),
         ],
       ),
       body: ListView(

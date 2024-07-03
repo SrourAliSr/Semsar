@@ -163,4 +163,43 @@ class AuthLogic implements AuthAbstract {
       return null;
     }
   }
+
+  @override
+  Future<bool> refreshToken() async {
+    final pref = await SharedPreferences.getInstance();
+
+    final refToken = pref.getString("refreshToken");
+
+    try {
+      final response = await http.post(
+        Uri.parse('$backendUrl/refresh'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(
+          {
+            "refreshToken": refToken,
+          },
+        ),
+      );
+      if (response.statusCode == 200) {
+        final token = jsonDecode(response.body)['accessToken'];
+
+        final refreshToken = jsonDecode(response.body)['refreshToken'];
+
+        Tokens.token = token;
+
+        Tokens.refToken = refreshToken;
+
+        await pref.setString('token', token);
+
+        await pref.setString('refreshToken', refreshToken);
+
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+    return false;
+  }
 }

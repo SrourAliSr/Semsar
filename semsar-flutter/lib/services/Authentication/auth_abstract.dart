@@ -15,4 +15,6 @@ abstract class AuthAbstract {
   });
 
   Future<User?> getUser(String email);
+
+  Future<bool> refreshToken();
 }
